@@ -59,7 +59,7 @@ object ALUOpType {
 
   def isAdd(func: UInt) = func(6)
   def pcPlus2(func: UInt) = func(5)
-  def isBru(func: UInt) = func(4)
+  def isBru(func: UInt) = func(4)                                         //????
   def isBranch(func: UInt) = !func(3)
   def isJump(func: UInt) = isBru(func) && !isBranch(func)
   def getBranchType(func: UInt) = func(2, 1)
