@@ -42,7 +42,7 @@ object ALUOpType {
   def srlw = "b0100101".U
   def sraw = "b0101101".U
 
-  def isWordOp(func: UInt) = func(5)
+  def isWordOp(func: UInt) = func(5)                    // Judgement w by func(5)_
 
   def jal  = "b1011000".U
   def jalr = "b1011010".U
@@ -57,13 +57,13 @@ object ALUOpType {
   def call = "b1011100".U
   def ret  = "b1011110".U
 
-  def isAdd(func: UInt) = func(6)
+  def isAdd(func: UInt) = func(6)                                      // judgement addop
   def pcPlus2(func: UInt) = func(5)
-  def isBru(func: UInt) = func(4)                                         //????
+  def isBru(func: UInt) = func(4)                                      // ???
   def isBranch(func: UInt) = !func(3)
   def isJump(func: UInt) = isBru(func) && !isBranch(func)
-  def getBranchType(func: UInt) = func(2, 1)
-  def isBranchInvert(func: UInt) = func(0)
+  def getBranchType(func: UInt) = func(2, 1)                           // 00-> =; 01->blt/bge; 02->bltu/bgeu
+  def isBranchInvert(func: UInt) = func(0)                             // ??
 }
 
 class ALUIO extends FunctionUnitIO {
@@ -75,7 +75,9 @@ class ALUIO extends FunctionUnitIO {
 class ALU(hasBru: Boolean = false) extends NutCoreModule {
   val io = IO(new ALUIO)
 
+  /** All val initial??(yuanzu??) */
   val (valid, src1, src2, func) = (io.in.valid, io.in.bits.src1, io.in.bits.src2, io.in.bits.func)
+
   def access(valid: Bool, src1: UInt, src2: UInt, func: UInt): UInt = {
     this.valid := valid
     this.src1 := src1
@@ -85,16 +87,17 @@ class ALU(hasBru: Boolean = false) extends NutCoreModule {
   }
 
   val isAdderSub = !ALUOpType.isAdd(func)
-  val adderRes = (src1 +& (src2 ^ Fill(XLEN, isAdderSub))) + isAdderSub
+  val adderRes = (src1 +& (src2 ^ Fill(XLEN, isAdderSub))) + isAdderSub      // Add and sub
   val xorRes = src1 ^ src2
   val sltu = !adderRes(XLEN)
-  val slt = xorRes(XLEN-1) ^ sltu
+  val slt = xorRes(XLEN-1) ^ sltu                                            // why????????
 
-  val shsrc1 = LookupTreeDefault(func, src1(XLEN-1,0), List(
+  /** By func to choose src1 */
+  val shsrc1 = LookSupTreeDefault(func, src1(XLEN-1,0), List(
     ALUOpType.srlw -> ZeroExt(src1(31,0), XLEN),
     ALUOpType.sraw -> SignExt(src1(31,0), XLEN)
   ))
-  val shamt = Mux(ALUOpType.isWordOp(func), src2(4, 0), if (XLEN == 64) src2(5, 0) else src2(4, 0))
+  val shamt = Mux(ALUOpType.isWordOp(func), src2(4, 0), if (XLEN == 64) src2(5, 0) else src2(4, 0))   // Judge func(5)->shamt
   val res = LookupTreeDefault(func(3, 0), adderRes, List(
     ALUOpType.sll  -> ((shsrc1  << shamt)(XLEN-1, 0)),
     ALUOpType.slt  -> ZeroExt(slt, XLEN),
@@ -108,7 +111,7 @@ class ALU(hasBru: Boolean = false) extends NutCoreModule {
   val aluRes = Mux(ALUOpType.isWordOp(func), SignExt(res(31,0), 64), res)
 
   val branchOpTable = List(
-    ALUOpType.getBranchType(ALUOpType.beq)  -> !xorRes.orR,
+    ALUOpType.getBranchType(ALUOpType.beq)  -> !xorRes.orR,  //.orR: or itself all bits
     ALUOpType.getBranchType(ALUOpType.blt)  -> slt,
     ALUOpType.getBranchType(ALUOpType.bltu) -> sltu
   )

@@ -24,7 +24,7 @@ object NutCoreTrap extends HasInstrType {
   def StateBadTrap   = 1.U
   def StateInvOpcode = 2.U
   def StateRunning   = 3.U
-
+/** Pattern matching TRAP */
   def TRAP    = BitPat("b????????????_?????_000_?????_1101011")
   val table = Array(TRAP -> List(InstrI, FuType.csr, CSROpType.set))
 }

@@ -25,7 +25,9 @@ import utils._
 trait HasRegFileParameter {
   val NRReg = 32
 }
-
+/**
+ * Define Regfile include read and write defs
+ * Parameters: Inherit father*/
 class RegFile extends HasRegFileParameter with HasNutCoreParameter {
   val rf = Mem(NRReg, UInt(XLEN.W))
   def read(addr: UInt) : UInt = Mux(addr === 0.U, 0.U, rf(addr))

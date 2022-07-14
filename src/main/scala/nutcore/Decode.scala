@@ -15,10 +15,13 @@
 ***************************************************************************************/
 
 package nutcore
-
+/** is file all code pack to nutcore */
 import chisel3._
 import chisel3.util._
-
+/** why use trait define??
+ * trait def can direct use!!
+ * object use shoule add object name
+ * */
 trait HasInstrType {
   def InstrN  = "b0000".U
   def InstrI  = "b0100".U
@@ -45,7 +48,6 @@ trait HasInstrType {
 //     BitPat("b111") -> 15.U
 //   )
 // }
-
 object SrcType {
   def reg = "b0".U
   def pc  = "b1".U
@@ -55,12 +57,12 @@ object SrcType {
 
 object FuType extends HasNutCoreConst {
   def num = 5
-  def alu = "b000".U
-  def lsu = "b001".U
-  def mdu = "b010".U
-  def csr = "b011".U
+  def alu = "b000".U                          // Arithmetic and Logic Unit
+  def lsu = "b001".U                          // Load and store Unit
+  def mdu = "b010".U                          // Mul and Div Unit
+  def csr = "b011".U                          // ???
   def mou = "b100".U
-  def bru = if(IndependentBru) "b101".U
+  def bru = if(IndependentBru) "b101".U       // Branch and Return Branch Unit
             else               alu
   def apply() = UInt(log2Up(num).W)
 }
@@ -82,6 +84,7 @@ object Instructions extends HasInstrType with HasNutCoreParameter {
 
 object CInstructions extends HasInstrType with HasNutCoreParameter{
   def NOP = 0x00000013.U
+  /** List : ????*/
   val DecodeDefault = List(RVCInstr.ImmNone, RVCInstr.DtCare, RVCInstr.DtCare, RVCInstr.DtCare)
   // val DecodeDefault = List(InstrN, FuType.csr, CSROpType.jmp)
   def CExtraDecodeTable = RVCInstr.cExtraTable

@@ -18,7 +18,7 @@ package utils
 
 import chisel3._
 import chisel3.util._
-
+/** how to use this function??*/
 object LookupTree {
   def apply[T <: Data](key: UInt, mapping: Iterable[(UInt, T)]): T =
     Mux1H(mapping.map(p => (p._1 === key, p._2)))

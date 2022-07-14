@@ -48,6 +48,7 @@ object RV32I_ALUInstr extends HasInstrType with HasNutCoreParameter {
   def LUI     = BitPat("b????????????????????_?????_0110111")
 
   val table = Array(
+    /** EXAMPLES: ADDI -> List("b0100".U, "b000".U, "b1000000".U*/
     ADDI           -> List(InstrI, FuType.alu, ALUOpType.add),
     SLLI           -> List(InstrI, FuType.alu, ALUOpType.sll),
     SLTI           -> List(InstrI, FuType.alu, ALUOpType.slt),
@@ -164,7 +165,7 @@ object RV64IInstr extends HasInstrType {
     SD             -> List(InstrS, FuType.lsu, LSUOpType.sd)
   )
 }
-
+/** RVIInstr table!!! */
 object RVIInstr extends HasNutCoreParameter {
   val table = RV32I_ALUInstr.table ++ RV32I_BRUInstr.table ++ RV32I_LSUInstr.table ++
     (if (XLEN == 64) RV64IInstr.table else Nil)

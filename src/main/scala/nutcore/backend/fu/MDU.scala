@@ -53,6 +53,7 @@ class Multiplier(len: Int) extends NutCoreModule {
   val io = IO(new MulDivIO(len))
   val latency = 1
 
+  /** RegNext */
   def DSPInPipe[T <: Data](a: T) = RegNext(a)
   def DSPOutPipe[T <: Data](a: T) = RegNext(RegNext(RegNext(a)))
   val mulRes = (DSPInPipe(io.in.bits(0)).asSInt * DSPInPipe(io.in.bits(1)).asSInt)
